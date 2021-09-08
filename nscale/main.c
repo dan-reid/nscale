@@ -43,15 +43,15 @@ int main(int argc, char* argv[]) {
     double c0 = c5 * pow(0.5, 5);
     double frequency = c0 * pow(ratio, midinote);
     
-    double intervals[24];
-    
     ratio = pow(2.0, 1.0 / notes);
-    for(int i = 0; i < notes; i++) {
+    
+    double intervals[24];
+    int count = notes + 1; // calcuate octave
+    for(int i = 0; i < count; i++) {
         intervals[i] = frequency;
         frequency *= ratio;
         printf("note %i: %f\n", i, intervals[i]);
     }
-    
     
     return 0;
 }
