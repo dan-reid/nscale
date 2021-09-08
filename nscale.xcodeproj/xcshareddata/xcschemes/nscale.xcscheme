@@ -59,6 +59,10 @@
             argument = "60"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "4.0"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
