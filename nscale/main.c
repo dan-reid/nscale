@@ -1,70 +1,116 @@
-//
-//  nscale.c
-//  nscale
-//
-//  Created by Daniel Reid on 08/09/2021.
-//
-
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 
+void printscale(int, double*, double, int);
 double calcfreq(int, double, double);
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("usage: nscale notes midinote\n");
+    int notes;
+    double frequency;
+    FILE* fp = NULL;
+    
+    int isfreq = 0;
+    int write_interval = 0;
+    int playit = 0;
+    
+    while(argc > 1) {
+        if (argv[1][0] == '-') {
+            char flag = argv[1][1];
+            if (flag == 'f') {
+                isfreq = 1;
+            } else if (flag == 'i') {
+                write_interval = 1;
+            } else if (flag == 'p') {
+                playit = 1;
+            } else {
+                printf("error: unkown flag: %s\n", argv[1]);
+                return 1;
+            }
+            
+            argc--;
+            argv++;
+        } else {
+            break;
+        }
+    }
+    
+    
+    double ratio = pow(2.0, 1.0 / 12.0);
+    
+    notes = atoi(argv[1]);
+    if (notes < 1 || notes > 24) {
+        printf("error: value for notes arg must be in the range 1-24");
         return 1;
     }
     
-    int notes = atoi(argv[1]);
-    int midinote = atoi(argv[2]);
-    
-    double interval;
-    
-    if (argc < 4) {
-        interval = 2.0;
+    if (isfreq) {
+        frequency = atof(argv[2]);
+        if (frequency < 0.0) {
+            printf("error: frequence cannot be negative");
+            return 1;
+        }
     } else {
-        char *ptr;
-        interval = strtod(argv[3], &ptr);
+        int midinote = atoi(argv[2]);
+        if (midinote < 0 || midinote > 127) {
+            printf("error: MIDI value must be in the range 1-127\n");
+            return 1;
+        }
+        
+        frequency = calcfreq(midinote, ratio, 2.0);
     }
     
-    if (notes < 1) {
-        printf("Error: notes must be positive\n");
-        return 1;
+    if (argc == 4) {
+        printf("writing to file: %s\n", argv[3]);
+        fp = fopen(argv[3], "w");
+        
+        if (fp == NULL) {
+            printf("warning: unable to create file: %s\n\n", argv[3]);
+            perror("");
+        }
     }
     
-    if (notes > 24) {
-        printf("Error: notes cannot not be greater than 24\n");
-        return 1;
-    }
-    
-    if (midinote < 0) {
-        printf("Error: MIDI value must be positive\n");
-        return 1;
-    }
-    
-    if (midinote > 127) {
-        printf("Error: max value for MIDI is 127\n");
-        return 1;
-    }
-    
-    double ratio = pow(interval, 1.0 / 12.0);
-    double frequency = calcfreq(midinote, ratio, interval);
-    
-    ratio = pow(interval, 1.0 / notes);
+    ratio = pow(2.0, 1.0 / notes);
     
     int count = notes + 1; // calcuate octave
     double intervals[count];
     double* ptr = intervals;
+    int err;
     for(int i = 0; i < count; i++) {
         *ptr = frequency;
         frequency *= ratio;
-        printf("note %i: %f\n", i, *ptr);
+        printscale(i, ptr, ratio, write_interval);
+        
+        if (fp) {
+            if (write_interval) {
+                err = fprintf(fp, "%d:\t%f\t%f\n", i, pow(ratio, i), *ptr);
+            } else {
+                err = fprintf(fp, "%d:\t%f\n", i, *ptr);
+            }
+            
+            if (err < 0) {
+                perror("there was an error while writing the file.\n");
+                break;
+            }
+        }
+        
         ptr++;
     }
     
+    if (fp) {
+        printf("finished writing file\n");
+        fclose(fp);
+    }
+    
     return 0;
+}
+
+void printscale(int i, double* ptr, double ratio, int write_interval) {
+    if (write_interval) {
+        printf("%d:\t%f\t%f\n", i, pow(ratio, i), *ptr);
+    } else {
+        printf("%d:\t%f\n", i, *ptr);
+    }
 }
 
 double calcfreq(int midinote, double ratio, double interval) {

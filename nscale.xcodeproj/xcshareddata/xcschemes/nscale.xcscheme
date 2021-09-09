@@ -52,6 +52,10 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
+            argument = "-i"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "12"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -60,7 +64,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "4.0"
+            argument = "/Users/danielreid/Desktop/output.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
