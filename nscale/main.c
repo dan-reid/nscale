@@ -9,6 +9,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+double calcfreq(int, double, double);
+
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         printf("usage: nscale notes midinote\n");
@@ -48,11 +50,9 @@ int main(int argc, char* argv[]) {
     }
     
     double ratio = pow(interval, 1.0 / 12.0);
-    double c5 = 220.0 * pow(ratio, 3);
-    double c0 = c5 * pow(0.5, 5);
-    double frequency = c0 * pow(ratio, midinote);
+    double frequency = calcfreq(midinote, ratio, interval);
     
-    ratio = pow(2.0, 1.0 / notes);
+    ratio = pow(interval, 1.0 / notes);
     
     int count = notes + 1; // calcuate octave
     double intervals[count];
@@ -65,4 +65,10 @@ int main(int argc, char* argv[]) {
     }
     
     return 0;
+}
+
+double calcfreq(int midinote, double ratio, double interval) {
+    double c5 = 220.0 * pow(ratio, 3);
+    double c0 = c5 * pow(0.5, 5);
+    return c0 * pow(ratio, midinote);
 }
