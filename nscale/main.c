@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+int writescale(FILE*, int, double*, double, int);
 void printscale(int, double*, double, int);
 double calcfreq(int, double, double);
 
@@ -82,12 +83,7 @@ int main(int argc, char* argv[]) {
         printscale(i, ptr, ratio, write_interval);
         
         if (fp) {
-            if (write_interval) {
-                err = fprintf(fp, "%d:\t%f\t%f\n", i, pow(ratio, i), *ptr);
-            } else {
-                err = fprintf(fp, "%d:\t%f\n", i, *ptr);
-            }
-            
+            err = writescale(fp, i, ptr, pow(ratio, i), write_interval);
             if (err < 0) {
                 perror("there was an error while writing the file.\n");
                 break;
@@ -103,6 +99,13 @@ int main(int argc, char* argv[]) {
     }
     
     return 0;
+}
+
+int writescale(FILE* fp, int i, double* ptr, double ratio, int write_interval) {
+    if (write_interval) {
+        return fprintf(fp, "%d:\t%f\t%f\n", i, pow(ratio, i), *ptr);
+    }
+    return fprintf(fp, "%d:\t%f\n", i, *ptr);
 }
 
 void printscale(int i, double* ptr, double ratio, int write_interval) {
