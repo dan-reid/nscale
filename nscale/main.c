@@ -19,10 +19,11 @@ int main(int argc, char* argv[]) {
     int midinote = atoi(argv[2]);
     
     double interval;
-    char *ptr;
+    
     if (argc < 4) {
         interval = 2.0;
     } else {
+        char *ptr;
         interval = strtod(argv[3], &ptr);
     }
     
@@ -53,12 +54,14 @@ int main(int argc, char* argv[]) {
     
     ratio = pow(2.0, 1.0 / notes);
     
-    double intervals[24];
     int count = notes + 1; // calcuate octave
+    double intervals[count];
+    double* ptr = intervals;
     for(int i = 0; i < count; i++) {
-        intervals[i] = frequency;
+        *ptr = frequency;
         frequency *= ratio;
         printf("note %i: %f\n", i, intervals[i]);
+        ptr++;
     }
     
     return 0;
