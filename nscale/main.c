@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < count; i++) {
         *ptr = frequency;
         frequency *= ratio;
-        printf("note %i: %f\n", i, intervals[i]);
+        printf("note %i: %f\n", i, *ptr);
         ptr++;
     }
     
